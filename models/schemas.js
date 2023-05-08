@@ -15,10 +15,37 @@ const contact = new Schema({
           type: Boolean,
           default: false,
         },
+        owner: {
+          type: Schema.Types.ObjectId,
+          ref: 'users',
+        }
 },{
   versionKey: false, // You should be aware of the outcome after set to false
   collection:process.env.CONTACTS_COLLECTION_NAME
 });
 
-const Contact = model('contact', contact);
-module.exports = {Contact};
+const user = new Schema({
+  password: {
+    type: String,
+    required: [true, 'Set password for user'],
+  },
+  email: {
+    type: String,
+    required: [true, 'Email is required'],
+    unique: true,
+  },
+  subscription: {
+    type: String,
+    enum: ["starter", "pro", "business"],
+    default: "starter"
+  },
+  token: String
+},{
+  versionKey: false, // You should be aware of the outcome after set to false
+  collection:process.env.USERS_COLLECTION_NAME
+})
+
+const Contact = model('contacts', contact);
+const User = model('users', user);
+
+module.exports = {Contact,User};
