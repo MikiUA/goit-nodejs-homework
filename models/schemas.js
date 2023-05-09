@@ -16,8 +16,8 @@ const contact = new Schema({
           default: false,
         },
         owner: {
-          type: Schema.Types.ObjectId,
-          ref: 'users',
+          type: String,//userID
+          required: [true, 'Set name for contact'],
         }
 },{
   versionKey: false, // You should be aware of the outcome after set to false
@@ -38,14 +38,28 @@ const user = new Schema({
     type: String,
     enum: ["starter", "pro", "business"],
     default: "starter"
-  },
-  token: String
+  }
 },{
   versionKey: false, // You should be aware of the outcome after set to false
   collection:process.env.USERS_COLLECTION_NAME
 })
 
+const token = new Schema({},{
+  token:{
+    type:String,
+    required:[true, 'Token is required'],
+  },
+  userID:{
+    type:String,
+    required:[true, 'userID is required'],
+  },
+},{
+  versionKey: false, // You should be aware of the outcome after set to false
+  collection:process.env.TOKENS_COLLECTION_NAME
+})
+
 const Contact = model('contacts', contact);
 const User = model('users', user);
+const Token = model('tokens', token);
 
-module.exports = {Contact,User};
+module.exports = {Contact,User,Token};
