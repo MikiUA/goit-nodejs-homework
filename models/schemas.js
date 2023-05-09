@@ -48,6 +48,7 @@ const token = new Schema({},{
   token:{
     type:String,
     required:[true, 'Token is required'],
+    unique: true,
   },
   userID:{
     type:String,

@@ -1,5 +1,5 @@
-const { generateNewTokens, deleteToken } = require("../models/auth");
-const { checkUser, newUser, findUserByID } = require("../models/users");
+const { generateNewTokens, deleteToken, signNewToken } = require("../models/auth");
+const { checkUser, newUser, findUserByID, updateUser } = require("../models/users");
 
 const login=async (req,res)=>{
     const {email,password} = req.body;
@@ -42,14 +42,29 @@ const getCurrentUser=(req,res)=>{
     ).catch(err=>res.status(500).send({message:err.message||"server error"}))
 }
 
-const patchUser=(req,res)=>{
+const patchUserSubscription=async (req,res)=>{
     const {subscription}=req.body;
     const subscriptionOptions=["starter","pro","business"];
     if (!subscription || !subscriptionOptions.includes(subscription)) return res.status(400).send({message:"invalid"});
-    req.userID;
+    const updatedUser=await updateUser(req.userID,{subscription});
+    if (!updatedUser) res.status(500).send("internal error");
+    return res.status(200).send(updatedUser);
 }
 
-const getNewToken=(req,res)=>{
-
+const getNewToken=async (req,res)=>{
+    const authHeader=req.headers['authorization'];
+    const authtoken=authHeader && authHeader.split(' ')[1];
+    if (!authtoken||authtoken===undefined) {
+        return res.status(401).send({message:"You must provide a valid token to gain access"})
+    }
+    try {
+        const newToken=await signNewToken(authtoken);
+        return res.status(200).send({token:newToken});
+    }
+    catch (err) {
+        return res.status(err.status || 500).send({message:err.message||"server error"})
+    }
+    
 }
-module.exports={login,register,logout,getCurrentUser,patchUser,getNewToken}
+
+module.exports={login,register,logout,getCurrentUser,patchUserSubscription,getNewToken}

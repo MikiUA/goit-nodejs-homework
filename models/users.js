@@ -8,7 +8,7 @@ function findUserByEmail(email){
 async function checkUser({email,password}){
     if (!email) return false;
     let user=await findUserByEmail(email);
-    console.log(user); return false
+    // console.log(user); return false
     if (!user) return false
     if (!password) return true;
     if (user.password===password) return user
@@ -24,6 +24,12 @@ function findUserByID(_id){
     return User.findOne({_id:_id},["email","subscription","_id"])
 }
 
+async function updateUser(_id,body){
+    const updatedUser= await User.findByIdAndUpdate({_id},body,{new:true});
+    const {email,subscription,_id} = updatedUser
+    return updatedUser?{email,subscription,_id}:null
+}
 
 
-module.exports={checkUser,newUser,findUserByID}
+
+module.exports={checkUser,newUser,findUserByID,updateUser}
