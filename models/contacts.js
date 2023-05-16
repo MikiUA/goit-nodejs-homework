@@ -1,7 +1,7 @@
 const {Contact} =require("./schemas");
 
-const listContacts = async () => {
-  return Contact.find();
+const listContacts = async ({filter={},page=1,items_per_page=10}) => {
+  return Contact.find(filter,null,{limit:items_per_page,skip:((page-1)*items_per_page)});
 }
 
 const getContactById = async (id) => {
