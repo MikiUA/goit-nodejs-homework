@@ -53,7 +53,7 @@ exports.deleteContact= async (req, res) => {
       if(!contact) return res.status(404).send({message:"no contact found"})
       if(contact.owner!==req.userID) return res.status(403)
       const result=await removeContact(contactId);
-      if(!result) throw
+      if(!result) throw ({message:"contact unavailible"})
       return res.status(204).send({message:"succesfully deleted"});
     }
     catch (err) {
@@ -74,7 +74,7 @@ exports.putContact= async (req, res) => {
       if(!contact) return res.status(404).send({message:"no contact found"})
       if(contact.owner!==req.userID) return res.status(403)
       const newContact=await updateContact(contactId,newBody);
-      if(!newContact) throw
+      if(!newContact) throw ({message:"contact unavailible"})
       return res.status(200).send(newContact);
     }
     catch (err) {

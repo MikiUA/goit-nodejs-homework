@@ -38,7 +38,12 @@ const user = new Schema({
     type: String,
     enum: ["starter", "pro", "business"],
     default: "starter"
-  }
+  },
+  verified:{
+    type: Boolean,
+    default:false
+  },
+  verificationToken:String,
 },{
   versionKey: false, // You should be aware of the outcome after set to false
   collection:process.env.USERS_COLLECTION_NAME
