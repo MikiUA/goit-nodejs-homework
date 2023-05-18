@@ -1,6 +1,7 @@
 const nodemailer= require ('nodemailer');
-const { User } = require('../schemas');
+const { User } = require('../../models/schemas');
 const getCurrentHost = require('../../helperFunctions/getCurrentHost');
+const { verificationMail } = require('./emailVariants');
 
 async function sendMail({to,subject,text,html}){
     try {
@@ -43,14 +44,7 @@ async function sendMail({to,subject,text,html}){
 
 async function sendVerificationMail({to,verificationToken}){
 
-  const link=`${getCurrentHost()}/users/verifyEmail?token=${verificationToken}`;
-  const email={
-    to, // list of receivers
-    subject: "Verification Email", // Subject line
-    text: `Please use this link to verify your email address: ${link}`, // plain text body
-    html: `<a href='${link}'> Please click on this message to verify your email address, or use the following link: ${link}</a>`, // html body
-  }
-	return sendMail(email);
+	return sendMail(verificationMail({to,verificationToken}));
 }
 
 module.exports={sendMail,sendVerificationMail};
