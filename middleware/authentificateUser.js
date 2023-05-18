@@ -11,7 +11,7 @@ function authentificateUser(req,res,next){
         return _401(res);
     }
 
-    jwt.verify(authtoken,ACCESS_TOKEN_VIEW,(err,authorisedUser)=>{
+    jwt.verify(authtoken,process.env.TOKEN_SECRET,(err,authorisedUser)=>{
         if (err) return _401(res)
         req.userID=authorisedUser._id;
         next()

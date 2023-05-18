@@ -12,7 +12,7 @@ async function sendMail({to,subject,text,html}){
           text, // plain text body
           html
         }
-
+        
         var transport = nodemailer.createTransport({
             host: "smtp.meta.ua",
             port: 25,//465,
@@ -23,28 +23,28 @@ async function sendMail({to,subject,text,html}){
             }
           });
 
-        transport.sendMail(email).then(
+        await transport.sendMail(email).then(
           response=> {
-            console.log({response});
+            if (response.accepted.length===0) throw 400
             return response
           }
         ).catch(
           err=> {
-            console.log(err);
+            // console.log(err);
             return null
           }
         )
     }
     catch (err)
     {
-      console.log({err})
-      return err
+      // console.log({err})
+      return null
     }
 }
 
 async function sendVerificationMail({to,verificationToken}){
 
-	return sendMail(verificationMail({to,verificationToken}));
+	return await sendMail(verificationMail({to,verificationToken}));
 }
 
 module.exports={sendMail,sendVerificationMail};

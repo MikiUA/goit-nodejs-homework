@@ -1,6 +1,8 @@
 const { nanoid } = require("nanoid");
-const { sendVerificationMail } = require("./email/sendEmail");
-const { User } = require("./schemas")
+const { sendVerificationMail } = require("../services/email/sendEmail");
+
+const { User } = require("./schemas");
+const gravatar = require("gravatar");
 
 function findUserByEmail(email){
     return User.findOne({email:email},["email","subscription","_id"])
@@ -19,8 +21,9 @@ async function checkUser({email,password}){
 async function newUser({email,password}){
     try {
         const verificationToken=nanoid();
-        const {subscription,_id} = await User.create({email,password,verificationToken});
-        
+        const avatarURL = gravatar.url(email);
+        console.log(avatarURL)
+        const {subscription,_id} = await User.create({email,password,verificationToken,avatarURL});
         // await sendVerificationMail({to:email,verificationToken});
         sendVerificationMail({to:email,verificationToken});
         return {email,subscription,_id} 

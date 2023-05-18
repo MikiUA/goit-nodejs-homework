@@ -10,4 +10,4 @@ function getCurrentHost(){
     return `http://${netAddress}:${process.env.PORT|| 3000}`
 }
 
-module.exports = getCurrentHost
+module.exports = {getCurrentHost}

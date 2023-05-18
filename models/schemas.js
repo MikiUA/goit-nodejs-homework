@@ -44,6 +44,7 @@ const user = new Schema({
     default:false
   },
   verificationToken:String,
+  avatarURL:String
 },{
   versionKey: false, // You should be aware of the outcome after set to false
   collection:process.env.USERS_COLLECTION_NAME

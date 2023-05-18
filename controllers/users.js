@@ -1,7 +1,10 @@
 const { generateNewTokens, deleteToken, signNewToken } = require("../models/auth");
-const { sendVerificationMail } = require("../models/email/sendEmail");
-const { User } = require("../models/schemas");
 const { checkUser, newUser, findUserByID, updateUser, verifyUserEmail, findFullUserByFilter } = require("../models/users");
+const { sendVerificationMail } = require("../services/email/sendEmail");
+
+const path = require("path");
+const fs = require("fs/promises");
+const Jimp = require("jimp");
 
 const login=async (req,res)=>{
     const {email,password} = req.body;
@@ -104,4 +107,25 @@ const getNewToken=async (req,res)=>{
     
 }
 
-module.exports={login,register,logout,getCurrentUser,patchUserSubscription,getNewToken,verifyEmail,resendEmail}
+// const patchUserAvatar= async (req:Request,res:Response)=>{
+const patchUserAvatar= async (req=new Request,res=new Response)=>{
+    // req.userID,req.file;
+    const { path: tempUpload, originalname } = req.file;
+    const filename = `${req.userID}_${originalname}`;
+    
+    const avatarsDirectory = path.join(__dirname, "../", "public", "avatars");
+    const resultUpload = path.join(avatarsDirectory, filename);
+
+    const rawAvatar = await Jimp.read(tempUpload);
+    rawAvatar.resize(250, 250);
+    await rawAvatar.writeAsync(tempUpload);
+
+    await fs.rename(tempUpload, resultUpload);
+    const avatarURL = path.join("avatars", filename);
+
+    const user=await updateUser(req.userID,{avatarURL})
+    if (user) return res.sendStatus(200)
+    return res.sendStatus(500)
+}
+
+module.exports={login,register,logout,getCurrentUser,patchUserSubscription,getNewToken,verifyEmail,resendEmail,patchUserAvatar}

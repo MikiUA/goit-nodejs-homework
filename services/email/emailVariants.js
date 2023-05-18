@@ -1,5 +1,6 @@
-const verificationMail=({to,verificationToken})=>{
+const { getCurrentHost } = require("../../helperFunctions/getCurrentHost");
 
+const verificationMail=({to,verificationToken})=>{
     const link=`${getCurrentHost()}/users/verifyEmail?token=${verificationToken}`;
     const email={
       to, // list of receivers
