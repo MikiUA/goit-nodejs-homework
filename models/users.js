@@ -1,9 +1,10 @@
+const { nanoid } = require("nanoid");
+const { sendVerificationMail } = require("./email/sendEmail");
 const { User } = require("./schemas")
 
 function findUserByEmail(email){
     return User.findOne({email:email},["email","subscription","_id"])
 }
-
 
 async function checkUser({email,password}){
     if (!email) return false;
@@ -16,8 +17,17 @@ async function checkUser({email,password}){
 }
 
 async function newUser({email,password}){
-    const {email,subscription,_id} = await User.create({email,password});
-    return {email,subscription,_id}
+    try {
+        const verificationToken=nanoid();
+        const {subscription,_id} = await User.create({email,password,verificationToken});
+        
+        // await sendVerificationMail({to:email,verificationToken});
+        sendVerificationMail({to:email,verificationToken});
+        return {email,subscription,_id} 
+    }
+    catch (err){
+        return {}
+    }
 }
 
 function findUserByID(_id){
@@ -26,10 +36,20 @@ function findUserByID(_id){
 
 async function updateUser(_id,body){
     const updatedUser= await User.findByIdAndUpdate({_id},body,{new:true});
-    const {email,subscription,_id} = updatedUser
-    return updatedUser?{email,subscription,_id}:null
+    if (!updatedUser) return null
+    const {email,subscription} = updatedUser
+    return {email,subscription,_id}
 }
 
+async function verifyUserEmail(token){
+    const verifiedUser=await User.findOneAndUpdate({verificationToken:token},{verified:true,verificationToken:null},{new:true});
+    if (!verifiedUser) return null
+    const {email,subscription,_id} = verifiedUser;
+    return {email,subscription,_id}
+}
 
+async function findFullUserByFilter(filter={}){
+    return User.findOne(filter,['-password']);
+}
 
-module.exports={checkUser,newUser,findUserByID,updateUser}
+module.exports={checkUser,newUser,findUserByID,updateUser,verifyUserEmail,findFullUserByFilter}

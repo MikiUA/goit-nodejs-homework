@@ -35,4 +35,5 @@ function generateNewTokens(userID){
 function deleteToken(token){
     return Token.findOneAndDelete({token:token});
 }
+
 module.exports={signNewToken,generateNewTokens,deleteToken}
