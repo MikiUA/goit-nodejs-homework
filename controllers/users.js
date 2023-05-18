@@ -36,7 +36,6 @@ const verifyEmail= async (req,res)=>{
     catch (err) {
         if (err===400) return res.status(400).send({message:"please send a valid verification token with your request"})//supposably a request using some programmable interface, like a react app or postman, sending a json
         if (err===404) return res.status(404).send("Link is not valid")//supposedly clickable link from email, sending plaintext
-        console.log({err})
         res.sendStatus(500);
     }
 }
@@ -49,13 +48,13 @@ const resendEmail=async (req,res)=>{
     const {verified,verificationToken}=user;
     if (verified && !verificationToken) throw 403
     if (!verificationToken) throw `TODO: ADD AN UNCONTROLLED EXCEPTION;`// this never should be happenning but in case of wrong scenarios we need to recreate a new verification token and update user, too much work for too rare of a case
-    await sendVerificationMail({to:email,verificationToken});
+    const result= await sendVerificationMail({to:email,verificationToken});
+    console.log(result);
     return res.status(200).send(`A message to ${email} has been sent. Please check your inbox.`);
     }
     catch (err) {
         if (err===400 || err===404) return res.status(err).send({message:"please send a valid email address"})
         if (err===403) return res.status(403).send({message:"The user is already verified"})
-        console.log({err})
         return res.sendStatus(500);
     }
 }

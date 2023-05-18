@@ -11,7 +11,6 @@ function findUserByEmail(email){
 async function checkUser({email,password}){
     if (!email) return false;
     let user=await findUserByEmail(email);
-    // console.log(user); return false
     if (!user) return false
     if (!password) return true;
     if (user.password===password) return user
@@ -22,7 +21,6 @@ async function newUser({email,password}){
     try {
         const verificationToken=nanoid();
         const avatarURL = gravatar.url(email);
-        console.log(avatarURL)
         const {subscription,_id} = await User.create({email,password,verificationToken,avatarURL});
         // await sendVerificationMail({to:email,verificationToken});
         sendVerificationMail({to:email,verificationToken});
